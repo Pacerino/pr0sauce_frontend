@@ -10,7 +10,6 @@ export const { getClient, query, PreloadQuery } = registerApolloClient(() => {
     cache: new InMemoryCache(),
     link: new HttpLink({
       uri: process.env.GQL_API,
-      fetchOptions: { cache: "no-store" },
     }),
   });
 });
