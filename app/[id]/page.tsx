@@ -1,8 +1,5 @@
-"use client";
-
-import { useParams, useRouter } from "next/navigation";
-import { gql, useQuery } from "@apollo/client";
-import { useEffect, useState } from "react";
+import { gql } from "@apollo/client";
+import { query } from "../ApolloWrapper";
 
 interface Item {
   id: string;
@@ -38,47 +35,26 @@ const ITEM_QUERY = gql`
   }
 `;
 
-export default function ItemPage() {
-  const { id } = useParams();
-  const router = useRouter();
-  const [coverUrl, setCoverUrl] = useState<string | null>(null);
+async function fetchCoverUrl(spotify_id: string) {
+  const response = await fetch(`https://open.spotify.com/oembed?url=spotify:track:${spotify_id}`);
+  const data = await response.json();
+  if (data.error) {
+    throw new Error("Spotify API Error, could not fetch cover URL");
+  }
+  return data.thumbnail_url;
+}
 
-  const { loading, error, data } = useQuery(ITEM_QUERY, {
-    variables: { id },
-    skip: !id,
+export default async function ItemPage({ params }: { params: { id: string } }) {
+  const { id } = await params;
+  const { data, error } = await query({
+    query: ITEM_QUERY,
+    variables: { id: parseInt(id) },
   });
 
-  useEffect(() => {
-    if (!id) {
-      router.push("/");
-    }
-  }, [id]);
-
-  useEffect(() => {
-    if (data && data.item[0]?.spotify_id) {
-      fetch(`https://open.spotify.com/oembed?url=spotify:track:${data.item[0].spotify_id}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.error) {
-            throw new Error(data.error.message);
-          }
-          setCoverUrl(data.thumbnail_url);
-        });
-    }
-  }, [data]);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-161618">
-        <div className="text-center">
-          <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-f2f5f4" role="status">
-          </div>
-        </div>
-      </div>
-    );
+  if (error) {
+    return <p className="text-f2f5f4">Error: Item konnte nicht geladen werden! Eine Info ging bereits an Helix!</p>;
   }
 
-  if (error) return <p className="text-f2f5f4">Error: {error.message}</p>;
   if (!data || !data.item.length) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-161618">
@@ -91,6 +67,7 @@ export default function ItemPage() {
   }
 
   const item: Item = data.item[0];
+  const coverUrl = item.spotify_id ? await fetchCoverUrl(item.spotify_id) : null;
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-161618">

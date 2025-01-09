@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ApolloWrapper } from "./ApolloWrapper";
 
 export const metadata: Metadata = {
   title: "pr0sauce",
@@ -14,7 +13,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased font-sans">
-        <ApolloWrapper>
           <nav className="bg-gray-800 p-4">
             <div className="container mx-auto flex justify-between items-center">
               <h1 className="text-2xl text-f2f5f4">pr0sauce</h1>
@@ -39,7 +37,6 @@ export default function RootLayout({
             </div>
           </nav>
           {children}
-        </ApolloWrapper>
       </body>
     </html>
   );
