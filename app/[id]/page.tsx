@@ -16,6 +16,12 @@ interface Item {
   youtube_id: string;
 }
 
+type PageProps = {
+  params: Promise<{
+    id: string;
+  }>;
+};
+
 const ITEM_QUERY = gql`
   query GetItem($id: Int!) {
     item(item_id: $id) {
@@ -44,7 +50,7 @@ async function fetchCoverUrl(spotify_id: string) {
   return data.thumbnail_url;
 }
 
-export default async function ItemPage({ params }: { params: { id: string } }) {
+export default async function ItemPage({ params }: PageProps) {
   const { id } = await params;
   const { data, error } = await query({
     query: ITEM_QUERY,
