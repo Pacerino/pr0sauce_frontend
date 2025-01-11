@@ -28,7 +28,8 @@ COPY . .
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED=1
-RUN --mount=type=secret,id=sentry_token,env=SENTRY_AUTH_TOKEN
+RUN --mount=type=secret,id=sentry_token \
+  export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_token)
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \
