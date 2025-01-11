@@ -20,6 +20,8 @@ RUN \
 
 # Rebuild the source code only when needed
 FROM base AS builder
+ARG SENTRY_AUTH_TOKEN
+ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
