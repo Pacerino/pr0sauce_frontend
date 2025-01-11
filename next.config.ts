@@ -11,6 +11,9 @@ export default withSentryConfig(nextConfig, {
 
 org: "pr0sauce",
 project: "pr0sauce",
+release: {
+  name: "pr0sauce@1.0.0",
+},
 
 // Only print logs for uploading source maps in CI
 silent: !process.env.CI,
